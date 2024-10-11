@@ -12,11 +12,13 @@
 
    <link rel="stylesheet" href="./css/app.css">
    <link rel="stylesheet" href="./fonts/Roboto.css">
-
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
-
 
    <!--      <div class="main-border">-->
    <div class="main-temp">
@@ -199,32 +201,20 @@
             <h2>Statistics</h2>
          </div>
          <div class="statistic-div">
-            <table>
-               <thead>
-                  <tr>
-                     <th class="th-sort">Name</th>
-                     <th class="th-sort">Speciality</th>
-                     <th class="th-sort">Age</th>
-                     <th class="th-sort">Gender</th>
-                     <th class="th-sort">Nationality</th>
-                  </tr>
-               </thead>
-               <tbody>
+            <div class="switch-buttons">
+               <button class="active-button"><b>Gender</b></button>
+               <button><b>Country</b></button>
+               <button><b>Course</b></button>
 
-               </tbody>
-            </table>
+            </div>
+            <canvas id="pieChart"></canvas>
          </div>
          <div class="statistic-buttons">
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <p>...</p>
-            <button>Last</button>
          </div>
       </div>
       <hr class="separator">
       <div class="arrow-helper">
-         <img class="left-image" src="./images/arrowLeft.png" alt="Left arrow">
+         <img class="left-image" src="./images/arrowLeft.png" alt="Left arrow" id="prev-btn">
          <div class="favorites">
             <div class="favorites-header">
                <h2>Favorites</h2>
@@ -233,7 +223,7 @@
 
             </div>
          </div>
-         <img class="right-image" src="./images/arrowRight.png" alt="Right arrow">
+         <img class="right-image" src="./images/arrowRight.png" alt="Right arrow" id="next-btn">
       </div>
       <hr class="separator">
       <footer class="footer-info">
@@ -340,8 +330,12 @@
       </div>
    </div>
    <script type="module" src="../src/js/app.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/dayjs/dayjs.min.js"></script>
 </body>
 <script>
+
    function togglePopupVisibility(popup) {
       popup.style.display = "flex";
    }

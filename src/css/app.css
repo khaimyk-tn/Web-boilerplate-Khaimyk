@@ -10,6 +10,7 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+/*#map1, #map2 { height: 200px; }*/
 .main-border {
     display: flex;
     width: 1200px;
@@ -351,8 +352,30 @@ td:nth-child(5) {
     display: inline-flex;
 }
 
-.statistic-buttons button {
-    color: #1ab7d9;
+.statistic-div {
+    display: flex;
+    width: 700px;
+    height: 700px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.switch-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.switch-buttons button {
+    color: gray;
+    font-size: 18px;
     border: none;
     background-color: white;
 }
@@ -368,6 +391,9 @@ td:nth-child(5) {
 }
 
 /* Спочатку приховуємо popup */
+/*.popup-add-teacher {*/
+/*    display: none;*/
+/*}*/
 .popup,
 .popup-add-teacher {
     display: none;
@@ -388,7 +414,7 @@ td:nth-child(5) {
     background-color: white;
 }
 
-.statistic-buttons .active-button {
+.switch-buttons .active-button {
     color: black;
 }
 
