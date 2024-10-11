@@ -1,21 +1,353 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ua">
 
-   <head itemscope itemtype="http://schema.org/WebSite">
+<head itemscope itemtype="http://schema.org/WebSite">
 
-      <meta charset="utf-8">
-      <meta http-equiv="x-ua-compatible" content="ie=edge">
-      <meta name="msapplication-tap-highlight" content="no">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta charset="utf-8">
+   <meta http-equiv="x-ua-compatible" content="ie=edge">
+   <meta name="msapplication-tap-highlight" content="no">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      <title>Project</title>
+   <title>Project</title>
 
-      <link rel="stylesheet" href="./css/app.css">
+   <link rel="stylesheet" href="./css/app.css">
+   <link rel="stylesheet" href="./fonts/Roboto.css">
 
-   </head>
+</head>
 
-   <body itemscope itemtype="http://schema.org/WebPage">
-      <script type="text/javascript" src="./js/app.js"></script>
-      
-  </body>
+<body itemscope itemtype="http://schema.org/WebPage">
+
+
+   <!--      <div class="main-border">-->
+   <div class="main-temp">
+      <header class="main-header">
+         <div class="header-text-div">
+            <h1 class="header-text">Teachinder</h1>
+         </div>
+         <div class="label-div">
+            <label class="label-search-text">
+               <input class="search" type="text" id="searchInput" placeholder="Name, note, or age to search">
+            </label>
+            <label class="label-search-button">
+               <input class="search-button" type="button" value="Search">
+            </label>
+         </div>
+      </header>
+      <div class="navigation-section">
+         <div class="menu-section">
+            <div class="section-text-div">
+               <p class="section-text"><b>Teachers</b></p>
+            </div>
+            <div class="section-text-div">
+               <p class="section-text"><b>Statistics</b></p>
+            </div>
+            <div class="section-text-div">
+               <p class="section-text"><b>Favorites</b></p>
+            </div>
+            <div class="section-text-div">
+               <p class="section-text"><b>About</b></p>
+            </div>
+
+         </div>
+         <div class="add-teacher-div">
+            <button class="add-teacher-button"><b>Add Teacher</b></button>
+            <div class="popup-add-teacher">
+               <div class="popup-content-add-teacher">
+                  <header class="popup-header-add-teacher">
+                     <h2 class="popup-add-teacher-text">Add Teacher</h2>
+                     <button class="popup-add-teacher-button">X</button>
+                  </header>
+                  <main class="popup-main">
+                     <form class="form" action="">
+                        <label for="name">Name </label><input id="name" type="text" name="name" placeholder="Enter name"
+                           class="input-name" required>
+                        <div class="select-speciality">
+                           <p class="label-speciality-text">Speciality</p>
+                           <label>
+                              <select class="select-speciality-option">
+                                 <option>Mathematics</option>
+                                 <option>English</option>
+                                 <option>Physics</option>
+                                 <option>Computer Science</option>
+                                 <option>Dancing</option>
+                                 <option>Chess</option>
+                                 <option>Biology</option>
+                                 <option>Chemistry</option>
+                                 <option>Law</option>
+                                 <option>Art</option>
+                                 <option>Medicine</option>
+                                 <option>Statistics</option>
+                              </select>
+                           </label>
+                        </div>
+                        <div class="many-label">
+                           <div class="country-label">
+                              <p class="label-country-text">Country</p>
+                              <label>
+                                 <select class="select-country-option">
+                                    <option>Ukraine</option>
+                                    <option>United States</option>
+                                    <option>Canada</option>
+                                    <option>Germany</option>
+                                    <option>Switzerland</option>
+                                    <option>France</option>
+                                    <option>Spain</option>
+                                    <option>Ireland</option>
+                                    <option>Turkey</option>
+                                    <option>Finland</option>
+                                    <option>Australia</option>
+                                    <option>Netherlands</option>
+                                    <option>Iran</option>
+                                    <option>Norway</option>
+                                    <option>New Zealand</option>
+                                    <option>Denmark</option>
+                                 </select>
+                              </label>
+                           </div>
+                           <div>
+                              <label for="city">City</label><input id="city" type="text" name="city" required>
+                           </div>
+
+                           <div>
+                              <label for="email">Email </label><input id="email" type="email" name="email" required>
+                           </div>
+                           <div>
+                              <label for="phone">Phone </label><input id="phone" type="tel" name="phone" required>
+                           </div>
+                           <div>
+                              <label for="date">Date of birth </label><input id="date" type="date" name="date" required>
+                           </div>
+                        </div>
+
+
+                        <div class="popup-sex">
+                           <label class="label-sex">Sex</label>
+                           <label style="color: black" class="label-sex-text" for="male">Male</label><input id="male"
+                              type="radio" name="gender" value="male" required>
+                           <label style="color: black" class="label-sex-text" for="female">Female</label><input
+                              id="female" type="radio" name="gender" value="female" required>
+                        </div>
+
+                        <div class="color-div">
+                           <label for="color">Background color </label><input id="color" type="color" name="color">
+                        </div>
+
+
+                        <div class="textarea-div">
+                           <p class="label-notes-text">Notes (optinal)</p>
+                           <label><textarea class="textarea"></textarea></label>
+                        </div>
+                        <label>
+                           <input type="submit" value="Add" class="submit-button">
+                        </label>
+                     </form>
+                  </main>
+               </div>
+            </div>
+         </div>
+      </div>
+      <hr class="separator">
+      <div class="search-div">
+         <div class="top-teachers-div">
+            <h2>Top Teachers</h2>
+         </div>
+         <form class="form-form" action="#">
+            <div class="form-div-extra">
+               <p class="form-text">Age</p>
+               <label for="age" class="selection"></label><select name="age" id="age">
+                  <option value="18-31">18-31</option>
+                  <option value="31-45">31-45</option>
+                  <option value="45-61">45-61</option>
+                  <option value="61+">61+</option>
+               </select>
+            </div>
+            <div class="form-div">
+               <p class="form-text">Region</p>
+               <label for="region" class="selection"></label><select name="region" id="region">
+                  <option value="Europe">Europe</option>
+                  <option value="Asia">Asia</option>
+                  <option value="Pacific">Pacific</option>
+                  <option value="Americas">Americas</option>
+               </select>
+            </div>
+            <div class="form-div">
+               <p class="form-text">Sex</p>
+               <label for="sex" class="selection"></label><select name="sex" id="sex">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+               </select>
+            </div>
+            <div class="form-div">
+               <label>
+                  <input type="checkbox" name="only-with-photo" value="Only with photo">
+               </label>
+               <p class="form-text">Only with photo</p>
+            </div>
+            <div class="form-div">
+               <label>
+                  <input type="checkbox" name="only-favorites" value="Only favorites">
+               </label>
+               <p class="form-text">Only favorites</p>
+            </div>
+         </form>
+      </div>
+      <div class="teachers-div">
+      </div>
+      <hr class="separator">
+      <div class="stat">
+         <div class="statistic-header">
+            <h2>Statistics</h2>
+         </div>
+         <div class="statistic-div">
+            <table>
+               <thead>
+                  <tr>
+                     <th class="th-sort">Name</th>
+                     <th class="th-sort">Speciality</th>
+                     <th class="th-sort">Age</th>
+                     <th class="th-sort">Gender</th>
+                     <th class="th-sort">Nationality</th>
+                  </tr>
+               </thead>
+               <tbody>
+
+               </tbody>
+            </table>
+         </div>
+         <div class="statistic-buttons">
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <p>...</p>
+            <button>Last</button>
+         </div>
+      </div>
+      <hr class="separator">
+      <div class="arrow-helper">
+         <img class="left-image" src="./images/arrowLeft.png" alt="Left arrow">
+         <div class="favorites">
+            <div class="favorites-header">
+               <h2>Favorites</h2>
+            </div>
+            <div class="favorites-main">
+
+            </div>
+         </div>
+         <img class="right-image" src="./images/arrowRight.png" alt="Right arrow">
+      </div>
+      <hr class="separator">
+      <footer class="footer-info">
+         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum.</p>
+         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Vel quam elementum pulvinar etiam</p>
+         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua.</p>
+      </footer>
+      <div class="navigation-section">
+         <div class="menu-section">
+            <div class="section-text-div">
+               <p class="section-text"><b>Teachers</b></p>
+            </div>
+            <div class="section-text-div">
+               <p class="section-text"><b>Statistics</b></p>
+            </div>
+            <div class="section-text-div">
+               <p class="section-text"><b>Favorites</b></p>
+            </div>
+            <div class="section-text-div">
+               <p class="section-text"><b>About</b></p>
+            </div>
+
+         </div>
+         <div class="add-teacher-div">
+            <button class="add-teacher-button" id="add-teacher-button"><b>Add Teacher</b></button>
+            <div class="popup-add-teacher" id="popup-teachers">
+               <div class="popup-content-add-teacher">
+                  <header class="popup-header-add-teacher">
+                     <h2 class="popup-add-teacher-text">Add Teacher</h2>
+                     <button id="close-button" class="popup-add-teacher-button">X</button>
+                  </header>
+                  <main class="popup-main">
+                     <form class="form" action="">
+                        <label for="name1">Name </label><input id="name1" type="text" name="name"
+                           placeholder="Enter name" class="input-name" required>
+                        <div class="select-speciality">
+                           <p class="label-speciality-text">Speciality</p>
+                           <label>
+                              <select class="select-speciality-option">
+                                 <option>Mathematics</option>
+                                 <option>English</option>
+                                 <option>IT</option>
+                              </select>
+                           </label>
+                        </div>
+                        <div class="many-label">
+                           <div class="country-label">
+                              <p class="label-country-text">Country</p>
+                              <label>
+                                 <select class="select-country-option">
+                                    <option>Ukraine</option>
+                                    <option>USA</option>
+                                    <option>Canada</option>
+                                 </select>
+                              </label>
+                           </div>
+                           <div>
+                              <label for="city1">City</label><input id="city1" type="text" name="city" required>
+                           </div>
+
+                           <div>
+                              <label for="email1">Email </label><input id="email1" type="email" name="email" required>
+                           </div>
+                           <div>
+                              <label for="phone1">Phone </label><input id="phone1" type="tel" name="phone" required>
+                           </div>
+                           <div>
+                              <label for="date1">Date of birth </label><input id="date1" type="date" required>
+                           </div>
+                        </div>
+
+
+                        <div class="popup-sex">
+                           <label class="label-sex">Sex</label>
+                           <label style="color: black" class="label-sex-text" for="male1">Male</label><input id="male1"
+                              type="radio" name="gender" value="male" required>
+                           <label style="color: black" class="label-sex-text" for="female1">Female</label><input
+                              id="female1" type="radio" name="gender" value="female" required>
+                        </div>
+
+                        <div class="color-div">
+                           <label for="color1">Background color </label><input id="color1" type="color">
+                        </div>
+
+
+                        <div class="textarea-div">
+                           <p class="label-notes-text">Notes (optinal)</p>
+                           <label><textarea class="textarea"></textarea></label>
+                        </div>
+                        <label>
+                           <input type="submit" value="Add" class="submit-button">
+                        </label>
+                     </form>
+                  </main>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <script type="module" src="../src/js/app.js"></script>
+</body>
+<script>
+   function togglePopupVisibility(popup) {
+      popup.style.display = "flex";
+   }
+   function closePopup(popup) {
+      popup.style.display = "none";
+   }
+</script>
+
 </html>
