@@ -80,13 +80,17 @@ async function makeUsers() {
         newUsers.push(newUser);
     });
 
-    arrayUsers = [...newUsers];
+    arrayUsers = [...validateUsers(newUsers)];
     return newUsers;
 }
 
 
 function isNeededString(str) {
     return typeof str === 'string' && str.at(0).toUpperCase() === str.at(0);
+}
+
+function validateUsers(users) {
+    return _.filter(users, user => validateObject(user))
 }
 
 function validateObject(user) {
@@ -128,6 +132,17 @@ function getRegion(country) {
     if (regions.Pacific.indexOf(country) !== -1)
         return "Pacific";
 }
+function getAge(ageSelection) {
+    let minMax = {}
+    if (ageSelection === "+") {
+        minMax.min = 61;
+        minMax.max = 1000;
+    } else {
+        minMax.min = ageSelection?.split('-')[0];
+        minMax.max = ageSelection?.split('-')[1];
+    }
+    return minMax
+}
 
 function filtration(users, filtrationKey = {}) {
     const resUsers = [];
@@ -153,7 +168,7 @@ function filtration(users, filtrationKey = {}) {
             (!filtrationKey.gender || user.gender.toLowerCase() === filtrationKey.gender.toLowerCase())
             &&
             (!filtrationKey.photo || isPhoto === filtrationKey.photo) &&
-            (!filtrationKey.favorite || user.favorite === filtrationKey.favorite)
+            (filtrationKey.favorite === undefined || user.favorite === true) // Улюблені
 
         ) {
             resUsers.push(user);
@@ -164,14 +179,15 @@ function filtration(users, filtrationKey = {}) {
 }
 
 function search(users, searchKey) {
-    if (Number(searchKey) - 1 === searchKey - 1) {
-        return users.find((user) => user.age === Number(searchKey));
-    }
 
     const name = searchKey.split(',')[0];
     const age = searchKey.split(',')[1];
 
-    return users.find((user) => ((user.full_name === name || name === undefined) && (user.age === Number(age) || age === undefined)));
+    if (Number(searchKey) - 1 === searchKey - 1) {
+        return _.find(arrayUsers, { age: Number(searchKey) });
+    }
+
+    return _.find(arrayUsers, { full_name: name, age: Number(age) })
 }
 
 function sort(users, key, flag) {
@@ -239,7 +255,7 @@ for (let i = 0; i < 2; i++) {
     });
 
     const form = popupContainer[i].querySelector(".form");
-    form.addEventListener("submit", function (event) {
+    form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         let name = form.querySelector(".input-name").value;
@@ -282,6 +298,20 @@ for (let i = 0; i < 2; i++) {
             note: notes === '' ? "My notes" : notes,
         };
 
+        try {
+            const response = await fetch('http://localhost:3000/teachers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newUser)
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
         arrayUsers.push(newUser);
         sortArray.push(newUser);
         makeTable();
@@ -296,6 +326,13 @@ const teachersBlock = document.querySelector(".teachers-div");
 function addUser(user) {
     if (validateObject(user)) {
         const photo = user.picture_large !== null ? user.picture_large : "images/photo1.jpg";
+        const userBirthday = dayjs(user.b_date).set('year', dayjs().year());
+        let dayToBirthday = userBirthday.diff(dayjs(), 'day');
+
+        if (dayToBirthday < 0) {
+            dayToBirthday = 365 + dayToBirthday;
+        }
+
         teachersBlock.innerHTML += `
     <div class="teacher-card">
          <div class="teacher-photo-div">
@@ -322,8 +359,8 @@ function addUser(user) {
                   <footer class="popup-footer">
                      <p class="popup-footer-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                      </p>
-                     <p class="popup-map-text">toggle map</p>
-                  </footer>
+<p>Days until the birthday: ${dayToBirthday}</p>
+                     <div style="height: 200px" id="map${popupID}"></div>                  </footer>
                </div>
             </div>
          </div>
@@ -336,15 +373,6 @@ function addUser(user) {
       </div>
     `;
 
-        const starIcon = document.createElement('img');
-        starIcon.src = user.favorite ? '/src/images/star2.png' : '/src/images/star1.png';
-        starIcon.className = 'star-fav';
-
-        const popup = document.getElementById("popup" + popupID);
-        popupID++;
-
-        popup.querySelector('.popup-main').appendChild(starIcon);
-        popupAddFunc(popup);
     }
 }
 
@@ -353,31 +381,26 @@ const regionSelect = document.getElementById('region');
 const sexSelect = document.getElementById('sex');
 
 ageSelect.addEventListener('change', function () {
-    addData();
-    makeTable()
+    addData()
 });
 
 regionSelect.addEventListener('change', function () {
-    addData();
-    makeTable()
+    addData()
 });
 
 sexSelect.addEventListener('change', function () {
-    addData();
-    makeTable()
+    addData()
 });
 
 const onlyWithPhotoCheckbox = document.querySelector('input[name="only-with-photo"]');
 const onlyFavoritesCheckbox = document.querySelector('input[name="only-favorites"]');
 
 onlyWithPhotoCheckbox.addEventListener('change', function () {
-    addData();
-    makeTable()
+    addData()
 });
 
 onlyFavoritesCheckbox.addEventListener('change', function () {
-    addData();
-    makeTable()
+    addData()
 });
 
 
@@ -386,6 +409,8 @@ function addData() {
         region: regionSelect.value || undefined,
         age: ageSelect.value || undefined,
         gender: sexSelect.value || undefined,
+        photo: onlyWithPhotoCheckbox.checked || undefined, // Перевірка на фото
+        favorite: onlyFavoritesCheckbox.checked || undefined, // Перевірка на улюблені
     };
 
     // Фільтруємо користувачів за критеріями
@@ -398,159 +423,158 @@ function addData() {
     // Додаємо викладачів у блок
     filteredUsers.forEach(user => {
         addUser(user);  // функція додає картку користувача
-        makeTable();
     });
 
     // Оновлення обробників для кнопок "вибране"
-    const stars = document.querySelectorAll('.star-fav');
     let i = 0;
-    filteredUsers.forEach(user => {
-        if (stars[i]) { // Перевірка, чи елемент зірочки існує
-            stars[i].addEventListener('click', () => {
-                user.favorite = !user.favorite;
-                addData(); // Оновлення після зміни улюбленого
-                addFav();  // Оновлення відображення улюблених
-            });
-        }
+
+    const teacherPhotoDiv = document.querySelectorAll('.popup');
+    teacherPhotoDiv.forEach(popup => {
+        const user = filteredUsers[i];
         i++;
-    });
-    // Оновлюємо таблицю
-    sortArray = filteredUsers;  // Записуємо відфільтровані дані
-    // Викликаємо функцію для оновлення таблиці
-}
+        let image = popup.parentNode.querySelector('.teacher-photo');
+        image.addEventListener('click', () => {
+            const userBirthday = dayjs(user.b_date).set('year', dayjs().year());
+            let dayToBirthday = userBirthday.diff(dayjs(), 'day');
+            if (dayToBirthday < 0) {
+                dayToBirthday = 365 + dayToBirthday;
+            }
+            const img = user.picture_large !== null ? user.picture_large : "images/photo1.jpg";
 
-function popupAddFunc(p) {
+            popup.innerHTML = `
+              <div class="popup-content">
+                <header class="popup-header">
+                   <h2 class="popup-header-text">Teacher info</h2>
+                   <button class="popup-close-button" onclick="closePopup(this.parentNode.parentNode.parentNode)">x</button>
+                </header>
+                <main class="popup-main">
+                   <img src="${img}" alt="No data" class="popup-teacher-photo">
+                   <div class="popup-info">
+                      <p class="popup-name">${user.full_name}</p>
+                      <p class="popup-subject"><b>${user.course}</b></p>
+                      <p class="popup-country">${user.city}, ${user.country}</p>
+                      <p class="popup-sex">${user.age}, ${user.gender}</p>
+                      <p class="popup-email">${user.email}</p>
+                      <p class="popup-number">${user.phone}</p>
+                   </div>
+                </main>
+                <footer class="popup-footer">
+                   <p class="popup-footer-text">${user.note}
+                   </p>
+                   <p>Days until the birthday: ${dayToBirthday}</p>
+                   <div style="height: 200px" id="map"></div>
+                </footer>
+             </div>`;
 
-    const photo = p.parentNode.querySelector(".teacher-photo");
-    const closeButton = p.querySelector('.popup-close-button');
-    photo.addEventListener('click', () => {
-        p.style.display = 'flex';
-    });
+            const starIcon = document.createElement('img');
+            starIcon.src = user.favorite ? '/src/images/star2.png' : '/src/images/star1.png';
+            starIcon.className = 'star-fav';
 
-    closeButton.addEventListener('click', () => {
-        p.style.display = 'none';
-    });
+            var map = L.map('map').setView([user.coordinates.latitude, user.coordinates.longitude], 13);
 
-}
-let sortArray = []
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            }).addTo(map);
 
-async function makeTable() {
-    // Використовуємо відфільтровані дані з фільтрації
-    const filtrationKey = {
-        region: regionSelect.value || undefined,
-        age: ageSelect.value || undefined,
-        gender: sexSelect.value || undefined,
-        photo: onlyWithPhotoCheckbox.checked || undefined,
-        favorite: onlyFavoritesCheckbox.checked || undefined,
-    };
+            L.marker([user.coordinates.latitude, user.coordinates.longitude]).addTo(map);
 
-    // Фільтруємо користувачів
-    const filteredUsers = filtration(arrayUsers, filtrationKey);
+            starIcon.addEventListener('click', () => {
+                user.favorite = !user.favorite;
+                addData();
+                addFav();
+            })
 
-    // Очищуємо таблицю
-    const table = document.querySelector('tbody');
-    table.innerHTML = ``;
-
-    // Заповнюємо таблицю відфільтрованими користувачами
-    for (let i = 0; i < Math.min(10, filteredUsers.length); i++) {
-        table.innerHTML += `
-    <tr>
-        <td class="td-name">${filteredUsers[i].full_name}</td>
-        <td>${filteredUsers[i].course}</td>
-        <td>${filteredUsers[i].age}</td>
-        <td>${filteredUsers[i].gender[0].toUpperCase() + filteredUsers[i].gender.slice(1)}</td>
-        <td>${filteredUsers[i].country}</td>
-    </tr>
-    `;
-    }
-
-    const pagesAmount = Math.ceil(filteredUsers.length / 10);
-    const statButtonsDiv = document.querySelector('.statistic-buttons');
-    statButtonsDiv.innerHTML = ``;
-
-    if (pagesAmount < 3) {
-        for (let i = 0; i < pagesAmount; i++) {
-            statButtonsDiv.innerHTML += `
-         <button>${i + 1}</button>
-      `;
-        }
-    } else if (pagesAmount === 4) {
-        statButtonsDiv.innerHTML = `
-         <button class="active-button">1</button>
-         <button>2</button>
-         <button>3</button>
-         <button>4</button>
-    `;
-    } else {
-        statButtonsDiv.innerHTML = `
-         <button class="active-button">1</button>
-         <button>2</button>
-         <button>3</button>
-         <button class="extension-button">...</button>
-         <button>${pagesAmount}</button>
-    `;
-    }
-
-    // Оновлюємо обробники кнопок для сторінок
-    const buttons = document.querySelectorAll('.statistic-buttons button');
-    buttons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            buttons.forEach(function (btn) {
-                btn.classList.remove('active-button');
+            popup.querySelector('.popup-main').appendChild(starIcon);
+            const closeButton = popup.querySelector('.popup-close-button');
+            closeButton.addEventListener('click', () => {
+                popup.style.display = 'none';
             });
-
-            button.classList.add('active-button');
-            remakeTable(button.textContent, filteredUsers);
+            popup.style.display = 'flex';
         });
     });
 }
+let sortArray = []
+let currentPieChart = null;
 
-// Функція для оновлення таблиці після перемикання сторінок
-function remakeTable(currentPage, filteredUsers) {
-    const table = document.querySelector('tbody');
-    table.innerHTML = ``;
-    for (let i = (currentPage - 1) * 10; i < Math.min(currentPage * 10, filteredUsers.length); i++) {
-        table.innerHTML += `
-    <tr>
-      <td class="td-name">${filteredUsers[i].full_name}</td>
-      <td>${filteredUsers[i].course}</td>
-      <td>${filteredUsers[i].age}</td>
-      <td>${filteredUsers[i].gender[0].toUpperCase() + filteredUsers[i].gender.slice(1)}</td>
-      <td>${filteredUsers[i].country}</td>
-    </tr>
-    `;
-    }
-}
+function makeTable() {
 
-const sortColumnAsc = document.querySelectorAll('th');
-//const sortColumnDes = document.querySelectorAll('.th-sort-asc');
-
-sortColumnAsc.forEach(function (column) {
-    recStat(column)
-});
-
-function recStat(column) {
-    column.addEventListener('click', function () {
-        if (column.className === 'th-sort') {
-            sortColumnAsc.forEach(function (column2) {
-                column2.className = 'th-sort';
-            });
-            column.className = 'th-sort-asc';
-            sortArray = [...sort(sortArray, column.textContent, true)];
-            remakeTable(1);
-        } else {
-            sortColumnAsc.forEach(function (column2) {
-                column2.className = 'th-sort';
-            });
-            column.className = 'th-sort';
-            recStat(column)
-            sortArray = [...sort(sortArray, column.textContent, false)];
-            remakeTable(1);
+    const updatePieChart = (data) => {
+        if (currentPieChart) {
+            currentPieChart.destroy();
         }
-    })
+
+        const ctx = document.getElementById("pieChart").getContext("2d");
+        currentPieChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    data: data.data,
+                    backgroundColor: data.backgroundColor
+                }]
+            }
+        });
+    };
+    const coursesData = {};
+    const countriesData = {};
+    const genderData = {};
+    arrayUsers.forEach(user => {
+        if (!coursesData[user.course]) {
+            coursesData[user.course] = 1;
+        } else {
+            coursesData[user.course]++;
+        }
+        if (!countriesData[user.country]) {
+            countriesData[user.country] = 1;
+        } else {
+            countriesData[user.country]++;
+        }
+        if (!genderData[user.gender]) {
+            genderData[user.gender] = 1;
+        } else {
+            genderData[user.gender]++;
+        }
+    });
+
+    const switchButtons = document.querySelectorAll('.switch-buttons button');
+    const buttons = [...switchButtons]
+
+    buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            buttons.forEach(function (buttonNew) {
+                buttonNew.className = ''
+            });
+            button.className = 'active-button'
+            switch (button.textContent) {
+                case "Gender":
+                    updatePieChart(pieChart3Data);
+                    break;
+                case "Country":
+                    updatePieChart(pieChart2Data);
+                    break;
+                case "Course":
+                    updatePieChart(pieChart1Data);
+                    break;
+            }
+        })
+    });
+
+    const pieChart1Data = {
+        labels: Object.keys(coursesData),
+        data: Object.values(coursesData),
+    };
+
+    const pieChart2Data = {
+        labels: Object.keys(countriesData),
+        data: Object.values(countriesData),
+    };
+
+    const pieChart3Data = {
+        labels: Object.keys(genderData),
+        data: Object.values(genderData),
+    };
+
+    updatePieChart(pieChart3Data)
 }
-
-
 
 const searchButton = document.querySelector('.search-button');
 
@@ -583,7 +607,7 @@ searchButton.addEventListener('click', function () {
                      </div>
                   </main>
                   <footer class="popup-footer">
-                     <p class="popup-footer-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                     <p class="popup-footer-text">${user.note}
                      </p>
                      <p class="popup-map-text">toggle map</p>
                   </footer>
@@ -600,12 +624,23 @@ searchButton.addEventListener('click', function () {
     `;
 });
 
+let favIndex = 0;
+const favCount = 5;
+
 function addFav() {
-    const fav = filtration(arrayUsers, { favorite: true });
+    const fav = _.filter(arrayUsers, user => user.favorite === true);
     const favMain = document.querySelector('.favorites-main');
 
+    // Обмежуємо індекс в межах довжини масиву улюблених викладачів
+    if (favIndex >= fav.length) {
+        favIndex = 0;
+    } else if (favIndex < 0) {
+        favIndex = fav.length - favCount;
+    }
+
+
     favMain.innerHTML = ``;
-    for (let i = 0; i < 5; i++) {
+    for (let i = favIndex; i < favIndex + favCount && i < fav.length; i++) {
         const user = fav[i];
         const photo = user.picture_large !== null ? user.picture_large : "images/photo1.jpg";
         favMain.innerHTML += `
@@ -623,30 +658,31 @@ function addFav() {
          </div>
     </div>
     `;
-
     }
-}
-async function initializePage() {
-    const users = await makeUsers();
-    makeTable();
-    addData(users);
-    addFav();// Додавання користувачів без фільтрів
-}
 
-initializePage(); // Виклик функції при завантаженні сторінки
+    const prevButton = document.querySelector('.left-image');
+    const nextButton = document.querySelector('.right-image');
+    let currentIndex = 0;
+    const cardWidth = document.querySelector('.teacher-card').offsetWidth + 20; // Width plus margin
 
+
+
+    document.getElementById('next-btn').addEventListener('click', function () {
+        favIndex += favCount; // Переходимо до наступних 5
+        addFav();
+    });
+
+    document.getElementById('prev-btn').addEventListener('click', function () {
+        favIndex -= favCount; // Повертаємося до попередніх 5
+        addFav();
+    });
+}
 async function main() {
-    await getRandomUser(); // Отримати випадкових користувачів
-    await makeUsers(); // Створити користувачів на основі отриманих даних
-    addData(); // Додати дані на сторінку
-    await makeTable(); // Створити таблицю на основі користувачів
-    addFav(); // Додати улюблених користувачів на сторінку
+    await makeUsers();
+    addData();
+    makeTable();
+    addFav();
 }
 document.addEventListener('DOMContentLoaded', () => {
     main();
 });
-// getRandomUser();
-// makeUsers()
-// addData();
-// makeTable();
-// addFav();
